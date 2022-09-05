@@ -1,0 +1,164 @@
+from django.shortcuts import render, redirect
+from news.models import News, User, Newsletter,Comment, SubComment
+from .forms import ContactForm, CommentForm, SubCommentForm
+from django.contrib.auth import authenticate, login, logout
+from django.core.mail import send_mail
+
+#for class base view
+from django.views.generic import TemplateView
+from django.views.generic import ListView
+
+
+
+# Create your views here.
+"""
+def index(request):
+    latest_news = News.objects.filter().order_by('-id')[:2]
+    news = News.objects.order_by('id')
+    context = {'latest_news': latest_news,'news': news,}
+    return render(request, 'news/index.html', context)
+"""
+
+
+class IndexView(ListView):
+    model = News
+    template_name = 'news/index.html'
+    context_object_name = 'latest_news'
+    # extra_context = 'news'
+
+    def get_queryset(self):
+        return News.objects.filter().order_by('-id')[:2]
+
+
+def category(request, category):
+    if category == "business":
+        news = News.objects.filter(category="Business")
+    else:
+        news = News.objects.filter(category=category)
+    context = {'news': news}
+    return render(request, 'news/category.html', context)
+
+
+def singlenews(request, heading):
+    single_news = News.objects.get(heading=heading)
+    total_comment = single_news.total_comment_count
+    single_news.views = single_news.views + 1
+    single_news.save()
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('single_news', heading=heading)
+
+    context = {'single_news': single_news, 'total_comments': total_comment}
+    return render(request, 'news/single.html', context)
+
+
+def comment(request):
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            form.save()
+        return redirect('/')
+    return render(request, 'news/index.html')
+
+
+def contact(request):
+    form = ContactForm()
+
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+    context = {'form': form}
+    return render(request, 'news/contact.html', context)
+
+
+def handlelogin(request):
+    if request.method == "POST":
+        email=request.POST["email"]
+        password = request.POST["pass"]
+        user = authenticate(request, email=email, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('index')
+        else:
+            return redirect('login')
+    return render(request, "news/login.html")
+
+
+def handleregister(request):
+    if request.method == "POST":
+        email = request.POST['email']
+        fname = request.POST['fname']
+        lname = request.POST['lname']
+        pass1 = request.POST['pass']
+        pass2 = request.POST['pass2']
+        user = User.objects.filter(email=email)
+        if user:
+            message=("User is already exist")
+            context={"message":message}
+            return render(request, "news/register.html", context)
+        else:
+            if pass1 == pass2:
+                data = {
+                    "email" : email,
+                    "first_name": fname,
+                    "last_name" : lname,
+                }
+                user_obj = User.objects.create(**data)
+                user_obj.set_password(pass1)
+                user_obj.save()
+                return redirect('login')
+            message=("Password and Re-enter password not matching..")
+            context = {"message": message}
+            return render(request, "news/register.html", context)
+
+    return render(request, "news/register.html")
+
+
+def handlelogout(request):
+    logout(request)
+    return redirect("index")
+
+
+def search(request):
+    query = request.GET['query']
+    if len(query) > 78:
+        allnews = News.objects.none()
+    else:
+        allnewstitle = News.objects.filter(heading__icontains=query)
+        allnewscontent = News.objects.filter(news__icontains=query)
+        allnews = allnewstitle.union(allnewscontent)
+
+    context = {"allnews": allnews, "query": query}
+    return render(request, 'news/search.html', context)
+
+
+def newsletter(request):
+    if request.method == "GET":
+        email = request.GET['email']
+
+        news_letter = Newsletter(email=email)
+        news_letter.save()
+        send_mail(
+            'Welcome to biznews NewsLetter',
+            f'Welcome, {email}.Thankyou for subscribe our NewsLetter',
+            'jatinyadav0000@gmail.com',
+            [f'{email}'],
+            fail_silently=False,
+        )
+        return redirect('index')
+
+
+def handlesubcomment(request):
+    if request.method == "POST":
+        form = SubCommentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+
+    return render(request, 'news/single.html')

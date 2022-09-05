@@ -1,0 +1,204 @@
+{% extends 'news/base.html' %}
+{% load static %}
+{% block contant %}
+
+    <!-- News With Sidebar Start -->
+    <div class="container-fluid">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- News Detail Start -->
+                    <div class="position-relative mb-3">
+                        <img class="img-fluid w-100" src="{{ single_news.news_cover.url }}" style="object-fit: cover;">
+                        <div class="bg-white border border-top-0 p-4">
+                            <div class="mb-3">
+                                <a class="badge badge-primary text-uppercase font-weight-semi-bold p-2 mr-2"
+                                   href="">{{ single_news.category }}</a>
+                                <a class="text-body" href="">{{ single_news.created }}</a>
+                            </div>
+                            <h1 class="mb-3 text-secondary text-uppercase font-weight-bold">{{ single_news.heading }}</h1>
+                            <p>{{ single_news.news }}</p>
+
+
+                        </div>
+                        <div class="d-flex justify-content-between bg-white border border-top-0 p-4">
+                            <div class="d-flex align-items-center">
+                                <img class="rounded-circle mr-2" src="{% static 'news/img/user.jpg' %}" width="25"
+                                     height="25" alt="">
+                                <span>{{ single_news.author.first_name }}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="ml-3"><i class="far fa-eye mr-2"></i>{{ single_news.views }}</span>
+                                <span class="ml-3"><i
+                                        class="far fa-comment mr-2"></i>{{ total_comments }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- News Detail End -->
+
+                    <!-- Comment List Start -->
+                    <div class="mb-3">
+                        <div class="section-title mb-0">
+                            <h4 class="m-0 text-uppercase font-weight-bold">Comments</h4>
+                        </div>
+                        <div class="bg-white border border-top-0 p-4">
+                            {% if not single_news.comments.all %}
+
+                                <div class="media mb-4">
+                                    <p>No Comments Yet.....</p>
+                                </div>
+                            {% else %}
+                                {% for comment in single_news.comments.all %}
+                                    <div class="media mb-4">
+                                        <img src="{% static 'news/img/user.jpg' %}" alt="Image"
+                                             class="img-fluid mr-3 mt-1" style="width: 45px;">
+                                        <div class="media-body">
+                                            <h6><a class="text-secondary font-weight-bold"
+                                                   href="">{{ comment.name }}</a>
+                                                <small><i>{{ comment.created }}</i></small></h6>
+                                            <p>{{ comment.message }}</p>
+                                                        {% for subcomment in comment.subcomments.all %}
+                                                    <div class="media mt-4">
+                                                        <img src="{% static 'news/img/user.jpg' %}" alt="Image" class="img-fluid mr-3 mt-1"
+                                                            style="width: 45px;">
+                                                        <div class="media-body">
+                                                            <h6><a class="text-secondary font-weight-bold" href="">{{subcomment.name}}</a> <small><i>{{ subcomment.created }}</i></small></h6>
+                                                            <p>{{ subcomment.message }}</p>
+                                                        </div>
+                                            </div>
+                                                        {% endfor %}
+                                            <button class="btn btn-sm btn-outline-secondary" data-toggle="modal" onclick="myFunc({{ comment.id }})"
+                                                    data-target="#a">Reply
+                                            </button>
+                                            <br><br>
+                                        </div>
+
+                                    </div>
+
+
+                                {% endfor %}
+
+                            {% endif %}
+
+
+                        </div>
+
+
+                    </div>
+                    <!-- Comment List End -->
+                    <div class="modal fade" id="a" tabindex="-1" role="dialog"
+                         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Give a Reply</h5>
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form method="post" action="/subcomment">
+                                    {% csrf_token %}
+                                    <div class="form-row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="name">Name *</label>
+                                                <input type="text" class="form-control" id="name"
+                                                       name="name"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="email">Email *</label>
+                                                <input type="email" class="form-control" id="email"
+                                                       name="email"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="number" hidden name="comment" value="{{ comment.id }}" id="custome_name"/>
+
+                                    <div class="form-group">
+                                        <label for="website">Website</label>
+                                        <input type="text" class="form-control" id="website"
+                                               name="website"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="message">Message *</label>
+                                        <textarea id="message" cols="30" rows="5" class="form-control"
+                                                  name="message"></textarea>
+                                    </div>
+
+                                    <div class="form-group mb-0">
+                                        <input type="submit" value="Leave a comment"
+                                               class="btn btn-primary font-weight-semi-bold py-2 px-3">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comment Form Start -->
+                    <div class="mb-3">
+                        <div class="section-title mb-0">
+                            <h4 class="m-0 text-uppercase font-weight-bold">Leave a comment</h4>
+                        </div>
+                        <div class="bg-white border border-top-0 p-4">
+                            <form id="request" method="post" class="main_form" action="">
+                                {% csrf_token %}
+
+                                <div class="form-row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="name">Name *</label>
+                                            <input type="text" class="form-control" id="name" name="name"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="email">Email *</label>
+                                            <input type="email" class="form-control" id="email" name="email"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="number" name="news" hidden value="{{ single_news.id }}"/>
+
+                                <div class="form-group">
+                                    <label for="website">Website</label>
+                                    <input type="text" class="form-control" id="website" name="website"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="message">Message *</label>
+                                    <textarea id="message" cols="30" rows="5" class="form-control"
+                                              name="message"></textarea>
+                                </div>
+
+                                <div class="form-group mb-0">
+                                    <input type="submit" value="Leave a comment"
+                                           class="btn btn-primary font-weight-semi-bold py-2 px-3">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Comment Form End -->
+                </div>
+
+                <div class="col-lg-4">
+                    {% include 'news/social.html' %}
+                    {% include 'news/ads.html' %}
+                    {% include 'news/trandnews.html' %}
+                    {% include 'news/newsletter.html' %}
+                    {% include 'news/tags.html' %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        const myFunc = (id)=>{
+            document.getElementById("custome_name").value=id
+        }
+    </script>
+{% endblock contant %}

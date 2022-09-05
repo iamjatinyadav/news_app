@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Register Here</h2>
+
+<form action="" method="post">
+  {% csrf_token %}
+
+  {% if message %}
+  <label>{{message}}</label><br>
+  {% endif %}
+  <label for="email">Email:</label><br>
+  <input type="text" id="email" name="email" placeholder="John@gmail.com" required><br>
+  <label for="fname">First name:</label><br>
+  <input type="text" id="fname" name="fname" placeholder="John"><br>
+  <label for="lname">Last name:</label><br>
+  <input type="text" id="lname" name="lname" placeholder="Doe"><br>
+  <label for="pass">Passsword:</label><br>
+  <input type="password" id="pass" name="pass" required><br>
+  <label for="pass2">Re-enter Passsword:</label><br>
+  <input type="password" id="pass2" name="pass2" required><br><br>
+  <p>Already Have A Account. <a href="{% url 'login' %}">Login Here </a></p><br>
+  <input type="submit" value="Submit">
+
+</form>
+
+
+</body>
+</html>
