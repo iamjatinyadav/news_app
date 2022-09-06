@@ -171,6 +171,7 @@ INSTALLED_APPS = (
     'constance.backends.database',
     'core',
     'news',
+
     'sass_processor',
 
 )

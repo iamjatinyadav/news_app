@@ -14,7 +14,7 @@
                                             <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="">{{ i.category }}</a>
                                             <a class="text-body" href=""><small>{{ i.created }}</small></a>
                                         </div>
-                                        <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="">{{ i.heading | truncatechars:25 }}</a>
+                                        <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="/single_news/{{ i.slug }}">{{ i.heading | truncatechars:25 }}</a>
                                     </div>
                                 </div>
                             {% endfor %}

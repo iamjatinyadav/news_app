@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+
 from news.models import News, User, Newsletter,Comment, SubComment
-from .forms import ContactForm, CommentForm, SubCommentForm
+from .forms import ContactForm, CommentForm, SubCommentForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
@@ -147,12 +149,18 @@ def handlelogin(request):
 """
 
 class HandleLoginView(LoginView):
-    template_name = "news/login.html"
-    success_url = "news/index.html"
+    # form_class = LoginForm
+    # template_name = "news/login.html"
+    #
+    # success_url = reverse_lazy("index")
+
+
+
     def get(self, request, *args, **kwargs):
         return render(request, "news/login.html")
 
     def post(self, request, *args, **kwargs):
+
         if request.method == "POST":
             email = request.POST["email"]
             password = request.POST["pass"]
@@ -198,6 +206,7 @@ def handleregister(request):
 
 
 class HandleRegisterView(CreateView):
+
     def get(self, request, *args, **kwargs):
         return render(request, "news/register.html")
 
@@ -240,9 +249,10 @@ def handlelogout(request):
 
 
 class HandleLogout(LogoutView):
-    def get(self, request, *args, **kwargs):
-        logout(request)
-        return redirect("index")
+    template_name = "news/index.html"
+    # def get(self, request, *args, **kwargs):
+    #     logout(request)
+    #     return redirect("index")
 
 
 """
@@ -323,15 +333,16 @@ def handlesubcomment(request):
 
 class HandleSubCommentView(CreateView):
     template_name = "news/single.html"
+    form_class = SubCommentForm
+    success_url = reverse_lazy("index")
+    # def get(self, request, *args, **kwargs):
+    #     return redirect(request.META['HTTP_REFERER'])
 
-    def get(self, request, *args, **kwargs):
-        return redirect(request.META['HTTP_REFERER'])
-
-    def post(self, request, *args, **kwargs):
-        if request.method == "POST":
-            form = SubCommentForm(request.POST)
-            if form.is_valid():
-                form.save()
-                return redirect(request.META['HTTP_REFERER'])
-            return redirect(request.META['HTTP_REFERER'])
+    # def post(self, request, *args, **kwargs):
+    #     if request.method == "POST":
+    #         form = SubCommentForm(request.POST)
+    #         if form.is_valid():
+    #             form.save()
+    #             return redirect(request.META['HTTP_REFERER'])
+    #         return redirect(request.META['HTTP_REFERER'])
 
