@@ -18,7 +18,7 @@ class Contact(admin.ModelAdmin):
 
 
 class NewsAdmin(admin.ModelAdmin):
-    list_display = ["heading", "category", "created", "modified"]
+    list_display = ["heading","slug", "category", "created", "modified"]
 
 
 admin.site.register(News, NewsAdmin)

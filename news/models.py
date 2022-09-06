@@ -1,5 +1,5 @@
 from django.db import models
-from django_extensions.db.models import TimeStampedModel
+from django_extensions.db.models import TimeStampedModel, AutoSlugField
 
 from .choices import NEWS_CATEGORY_CHOICES
 from user.models import User
@@ -22,10 +22,10 @@ class Contact(TimeStampedModel):
 
 class News(TimeStampedModel):
     category = models.CharField(max_length=50, null=True, blank=True, choices=NEWS_CATEGORY_CHOICES, default='Business')
+    slug = AutoSlugField(populate_from=["heading"], null=True, blank=True)
     heading = models.CharField(max_length=255)
     author = models.ForeignKey(User, on_delete=models.CASCADE, default=User)
     news_cover = models.FileField(upload_to='media/')
-    slug = models.CharField(max_length=500, null=True, blank=True)
     views = models.IntegerField(default=0)
     news = models.TextField()
 

@@ -3,10 +3,11 @@ from news.models import News, User, Newsletter,Comment, SubComment
 from .forms import ContactForm, CommentForm, SubCommentForm
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
 
 #for class base view
 from django.views.generic import TemplateView
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 
 
@@ -24,12 +25,16 @@ class IndexView(ListView):
     model = News
     template_name = 'news/index.html'
     context_object_name = 'latest_news'
-    # extra_context = 'news'
 
     def get_queryset(self):
         return News.objects.filter().order_by('-id')[:2]
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        et = super(IndexView, self).get_context_data(**kwargs)
+        et['news'] = News.objects.order_by('id')
+        return et
 
+"""
 def category(request, category):
     if category == "business":
         news = News.objects.filter(category="Business")
@@ -37,10 +42,21 @@ def category(request, category):
         news = News.objects.filter(category=category)
     context = {'news': news}
     return render(request, 'news/category.html', context)
+"""
+class CategoryView(ListView):
+    template_name = "news/category.html"
+
+    def get(self, request, queryset=None, *args, **kwargs):
+        if kwargs.get('category') == "business":
+            news = News.objects.filter(category='Business')
+        else:
+            news = News.objects.filter(category=kwargs.get('category'))
+        return render(request, self.template_name, {'news': news})
 
 
-def singlenews(request, heading):
-    single_news = News.objects.get(heading=heading)
+
+def singlenews(request, slug):
+    single_news = News.objects.get(slug=slug)
     total_comment = single_news.total_comment_count
     single_news.views = single_news.views + 1
     single_news.save()
@@ -49,19 +65,10 @@ def singlenews(request, heading):
         form = CommentForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('single_news', heading=heading)
+            return redirect('single_news', slug=slug)
 
     context = {'single_news': single_news, 'total_comments': total_comment}
     return render(request, 'news/single.html', context)
-
-
-def comment(request):
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            form.save()
-        return redirect('/')
-    return render(request, 'news/index.html')
 
 
 def contact(request):

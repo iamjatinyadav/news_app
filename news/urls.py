@@ -3,8 +3,8 @@ from . import views
 
 urlpatterns = [
     #path('',views.index, name="index"),
-    path('catagory/<str:category>', views.category, name="category"),
-    path('single_news/<str:heading>', views.singlenews, name="single_news"),
+    #path('catagory/<str:category>', views.category, name="category"),
+    path('single_news/<slug:slug>', views.singlenews, name="single_news"),
     path('singlenews', views.singlenews, name="single_news"),
     path('contact', views.contact, name="contact"),
     path('Login',views.handlelogin, name="login"),
@@ -17,5 +17,6 @@ urlpatterns = [
 
     #class base urls
     path('', views.IndexView.as_view(), name="index"),
+    path('catagory/<str:category>', views.CategoryView.as_view(), name="category"),
 
 ]
