@@ -144,7 +144,7 @@
                             <h4 class="m-0 text-uppercase font-weight-bold">Leave a comment</h4>
                         </div>
                         <div class="bg-white border border-top-0 p-4">
-                            <form id="request" method="post" class="main_form" action="">
+                            <form id="request" method="post" class="main_form" action="{% url 'comments' %}">
                                 {% csrf_token %}
 
                                 <div class="form-row">

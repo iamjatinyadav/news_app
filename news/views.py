@@ -6,8 +6,9 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 
 #for class base view
-from django.views.generic import TemplateView
-from django.views.generic import ListView, DetailView
+
+from django.views.generic import ListView, DetailView, CreateView, FormView
+from django.contrib.auth.views import LoginView
 
 
 
@@ -54,7 +55,7 @@ class CategoryView(ListView):
         return render(request, self.template_name, {'news': news})
 
 
-
+"""
 def singlenews(request, slug):
     single_news = News.objects.get(slug=slug)
     total_comment = single_news.total_comment_count
@@ -69,8 +70,38 @@ def singlenews(request, slug):
 
     context = {'single_news': single_news, 'total_comments': total_comment}
     return render(request, 'news/single.html', context)
+"""
 
 
+class SingleNewsView(DetailView):
+    model = News
+    template_name = "news/single.html"
+
+    def get(self, request, *args, **kwargs):
+        single_news = News.objects.get(slug=kwargs.get('slug'))
+        total_comment = single_news.total_comment_count
+        single_news.views = single_news.views + 1
+        single_news.save()
+
+        context = {'single_news': single_news, 'total_comments': total_comment}
+        return render(request, 'news/single.html', context)
+
+
+class CommentPostView(CreateView):
+    slug_field = 'slug'
+    def get(self, request, *args, **kwargs):
+        form = CommentForm()
+        context = {'form': form}
+        return render(request, "news/single.html", context)
+
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect(request.META['HTTP_REFERER'])
+
+"""
 def contact(request):
     form = ContactForm()
 
@@ -81,6 +112,23 @@ def contact(request):
 
     context = {'form': form}
     return render(request, 'news/contact.html', context)
+"""
+
+
+class ContactView(FormView):
+    template_name = "news/contact.html"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, "news/contact.html")
+
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            form = ContactForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect("index")
+            return redirect("contact")
+
 
 
 def handlelogin(request):
