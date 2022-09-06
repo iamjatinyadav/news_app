@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 #for class base view
 
 from django.views.generic import ListView, DetailView, CreateView, FormView
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 
 
 
@@ -89,6 +89,7 @@ class SingleNewsView(DetailView):
 
 class CommentPostView(CreateView):
     slug_field = 'slug'
+
     def get(self, request, *args, **kwargs):
         form = CommentForm()
         context = {'form': form}
@@ -130,7 +131,7 @@ class ContactView(FormView):
             return redirect("contact")
 
 
-
+"""
 def handlelogin(request):
     if request.method == "POST":
         email=request.POST["email"]
@@ -143,8 +144,28 @@ def handlelogin(request):
         else:
             return redirect('login')
     return render(request, "news/login.html")
+"""
 
+class HandleLoginView(LoginView):
+    template_name = "news/login.html"
+    success_url = "news/index.html"
+    def get(self, request, *args, **kwargs):
+        return render(request, "news/login.html")
 
+    def post(self, request, *args, **kwargs):
+        if request.method == "POST":
+            email = request.POST["email"]
+            password = request.POST["pass"]
+            user = authenticate(request, email=email, password=password)
+
+            if user is not None:
+                login(request, user)
+                return redirect('index')
+            else:
+                return redirect('login')
+        return render(request, "news/login.html")
+
+"""
 def handleregister(request):
     if request.method == "POST":
         email = request.POST['email']
@@ -173,13 +194,58 @@ def handleregister(request):
             return render(request, "news/register.html", context)
 
     return render(request, "news/register.html")
+"""
 
 
+class HandleRegisterView(CreateView):
+    def get(self, request, *args, **kwargs):
+        return render(request, "news/register.html")
+
+    def post(self, request, *args, **kwargs):
+        if request.method == "POST":
+            email = request.POST['email']
+            fname = request.POST['fname']
+            lname = request.POST['lname']
+            pass1 = request.POST['pass']
+            pass2 = request.POST['pass2']
+            user = User.objects.filter(email=email)
+            if user:
+                message = "User is already exist"
+                context = {"message": message}
+                return render(request, "news/register.html", context)
+            else:
+                if pass1 == pass2:
+                    data = {
+                        "email": email,
+                        "first_name": fname,
+                        "last_name": lname,
+                    }
+                    user_obj = User.objects.create(**data)
+                    user_obj.set_password(pass1)
+                    user_obj.save()
+                    return redirect('login')
+                message = "Password and Re-enter password not matching.."
+                context = {"message": message}
+                return render(request, "news/register.html", context)
+
+        return render(request, "news/register.html")
+
+
+
+"""
 def handlelogout(request):
     logout(request)
     return redirect("index")
+"""
 
 
+class HandleLogout(LogoutView):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return redirect("index")
+
+
+"""
 def search(request):
     query = request.GET['query']
     if len(query) > 78:
@@ -191,8 +257,24 @@ def search(request):
 
     context = {"allnews": allnews, "query": query}
     return render(request, 'news/search.html', context)
+"""
 
 
+class SearchView(ListView):
+    template_name = "news/search.html"
+    def get(self, request, *args, **kwargs):
+        query = request.GET['query']
+        if len(query) > 78:
+            allnews = News.objects.none()
+        else:
+            allnewstitle = News.objects.filter(heading__icontains=query)
+            allnewscontent = News.objects.filter(news__icontains=query)
+            allnews = allnewstitle.union(allnewscontent)
+
+        context = {"allnews": allnews, "query": query}
+        return render(request, 'news/search.html', context)
+
+"""
 def newsletter(request):
     if request.method == "GET":
         email = request.GET['email']
@@ -207,8 +289,27 @@ def newsletter(request):
             fail_silently=False,
         )
         return redirect('index')
+"""
 
+class NewsLetterView(FormView):
+    template_name = "news/newsletter.html"
 
+    def get(self, request, *args, **kwargs):
+        if request.method == "GET":
+            email = request.GET['email']
+
+            news_letter = Newsletter(email=email)
+            news_letter.save()
+            send_mail(
+                'Welcome to biznews NewsLetter',
+                f'Welcome, {email}.Thankyou for subscribe our NewsLetter',
+                'jatinyadav0000@gmail.com',
+                [f'{email}'],
+                fail_silently=False,
+            )
+            return redirect('index')
+
+"""
 def handlesubcomment(request):
     if request.method == "POST":
         form = SubCommentForm(request.POST)
@@ -217,3 +318,20 @@ def handlesubcomment(request):
             return redirect('index')
 
     return render(request, 'news/single.html')
+"""
+
+
+class HandleSubCommentView(CreateView):
+    template_name = "news/single.html"
+
+    def get(self, request, *args, **kwargs):
+        return redirect(request.META['HTTP_REFERER'])
+
+    def post(self, request, *args, **kwargs):
+        if request.method == "POST":
+            form = SubCommentForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect(request.META['HTTP_REFERER'])
+            return redirect(request.META['HTTP_REFERER'])
+

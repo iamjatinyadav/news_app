@@ -22,7 +22,7 @@
           <div class="mb-1 text-muted">{{news.created}}</div>
           <p class="card-text mb-auto">{{news.news | truncatechars:300}}</p>
           <div class="my-2">
-          <a href="/single_news/{{news.heading}}" role="button" class="btn btn-primary">Continue reading</a>
+          <a href="/single_news/{{news.slug}}" role="button" class="btn btn-primary">Continue reading</a>
           </div>
         </div>
     {% endfor %}
