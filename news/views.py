@@ -6,6 +6,7 @@ from .forms import ContactForm, CommentForm, SubCommentForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
 
 #for class base view
 
@@ -29,11 +30,9 @@ class IndexView(ListView):
     template_name = 'news/index.html'
     context_object_name = 'latest_news'
 
-    def get_queryset(self):
-        return News.objects.filter().order_by('-id')[:2]
-
     def get_context_data(self, *, object_list=None, **kwargs):
         et = super(IndexView, self).get_context_data(**kwargs)
+        et['latest_news'] = News.objects.filter().order_by('-id')[:2]
         et['news'] = News.objects.order_by('id')
         return et
 
@@ -90,19 +89,22 @@ class SingleNewsView(DetailView):
 
 
 class CommentPostView(CreateView):
-    slug_field = 'slug'
+    form_class = CommentForm
+    template_name = "news/single.html"
+    success_url = reverse_lazy("index")
 
-    def get(self, request, *args, **kwargs):
-        form = CommentForm()
-        context = {'form': form}
-        return render(request, "news/single.html", context)
-
-    def post(self, request, *args, **kwargs):
-        if request.method == 'POST':
-            form = CommentForm(request.POST)
-            if form.is_valid():
-                form.save()
-                return redirect(request.META['HTTP_REFERER'])
+    #
+    # def get(self, request, *args, **kwargs):
+    #     form = CommentForm()
+    #     context = {'form': form}
+    #     return render(request, "news/single.html", context)
+    #
+    # def post(self, request, *args, **kwargs):
+    #     if request.method == 'POST':
+    #         form = CommentForm(request.POST)
+    #         if form.is_valid():
+    #             form.save()
+    #             return redirect(request.META['HTTP_REFERER'])
 
 """
 def contact(request):
@@ -118,19 +120,21 @@ def contact(request):
 """
 
 
-class ContactView(FormView):
+class ContactView(CreateView):
+    form_class = ContactForm
     template_name = "news/contact.html"
-
-    def get(self, request, *args, **kwargs):
-        return render(request, "news/contact.html")
-
-    def post(self, request, *args, **kwargs):
-        if request.method == 'POST':
-            form = ContactForm(request.POST)
-            if form.is_valid():
-                form.save()
-                return redirect("index")
-            return redirect("contact")
+    success_url = reverse_lazy("index")
+    #
+    # def get(self, request, *args, **kwargs):
+    #     return render(request, "news/contact.html")
+    #
+    # def post(self, request, *args, **kwargs):
+    #     if request.method == 'POST':
+    #         form = ContactForm(request.POST)
+    #         if form.is_valid():
+    #             form.save()
+    #             return redirect("index")
+    #         return redirect("contact")
 
 
 """
@@ -148,30 +152,21 @@ def handlelogin(request):
     return render(request, "news/login.html")
 """
 
+
 class HandleLoginView(LoginView):
-    # form_class = LoginForm
-    # template_name = "news/login.html"
-    #
-    # success_url = reverse_lazy("index")
-
-
-
-    def get(self, request, *args, **kwargs):
-        return render(request, "news/login.html")
+    template_name = "news/login.html"
 
     def post(self, request, *args, **kwargs):
 
-        if request.method == "POST":
-            email = request.POST["email"]
-            password = request.POST["pass"]
-            user = authenticate(request, email=email, password=password)
+        email = request.POST["email"]
+        password = request.POST["pass"]
+        user = authenticate(request, email=email, password=password)
 
-            if user is not None:
-                login(request, user)
-                return redirect('index')
-            else:
-                return redirect('login')
-        return render(request, "news/login.html")
+        if user is not None:
+            login(request, user)
+            return redirect('index')
+        else:
+            return redirect('login')
 
 """
 def handleregister(request):
@@ -206,9 +201,7 @@ def handleregister(request):
 
 
 class HandleRegisterView(CreateView):
-
-    def get(self, request, *args, **kwargs):
-        return render(request, "news/register.html")
+    template_name = "news/register.html"
 
     def post(self, request, *args, **kwargs):
         if request.method == "POST":
@@ -272,6 +265,7 @@ def search(request):
 
 class SearchView(ListView):
     template_name = "news/search.html"
+
     def get(self, request, *args, **kwargs):
         query = request.GET['query']
         if len(query) > 78:
