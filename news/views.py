@@ -91,9 +91,13 @@ class SingleNewsView(DetailView):
 class CommentPostView(CreateView):
     form_class = CommentForm
     template_name = "news/single.html"
-    success_url = reverse_lazy("index")
+    # success_url = '/single_news/{{single_news}}'
 
-    #
+    def get_success_url(self):
+        current_slug = self.object.news.slug
+        return reverse_lazy('single_news', kwargs={'slug': current_slug})
+
+
     # def get(self, request, *args, **kwargs):
     #     form = CommentForm()
     #     context = {'form': form}
@@ -328,7 +332,11 @@ def handlesubcomment(request):
 class HandleSubCommentView(CreateView):
     template_name = "news/single.html"
     form_class = SubCommentForm
-    success_url = reverse_lazy("index")
+    # success_url = reverse_lazy("index")
+
+    def get_success_url(self):
+        current_slug = self.object.comment.news.slug
+        return reverse_lazy('single_news', kwargs={'slug': current_slug})
     # def get(self, request, *args, **kwargs):
     #     return redirect(request.META['HTTP_REFERER'])
 
