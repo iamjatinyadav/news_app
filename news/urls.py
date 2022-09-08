@@ -25,7 +25,7 @@ urlpatterns = [
     path('Register', views.HandleRegisterView.as_view(), name="register"),
     path('Logout', views.HandleLogout.as_view(), name="logout"),
     path('search', views.SearchView.as_view(), name="search"),
-    path('newsletter', views.NewsLetterView.as_view(), name="newsletter"),
+    path('newsletter', views.NewsLetterFormView.as_view(), name="newsletter"),
     path('subcomment', views.HandleSubCommentView.as_view(), name="subcomment"),
 
 ]

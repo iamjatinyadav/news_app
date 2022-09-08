@@ -1,4 +1,9 @@
+from dataclasses import fields
+from email import message
+from urllib import request
 from django import forms
+from django.core.mail import send_mail
+from django.contrib import messages
 from news.models import *
 
 
@@ -44,5 +49,40 @@ class LoginForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('email', 'password')
+
+
+class NewsletterForm(forms.ModelForm):
+
+    class Meta:
+        model = Newsletter
+        fields = "__all__"
+
+
+    def is_valid(self, request):
+        email = self.data['email']
+
+        if Newsletter.objects.filter(email= email).exists():
+            return messages.error(request, "this email is already registerd.")
+
+        send_mail(
+                'Welcome to biznews NewsLetter',
+                f'Welcome, {email}.Thankyou for subscribe our NewsLetter',
+                'jatinyadav0000@gmail.com',
+                [f'{email}'],
+                fail_silently=False,
+            )
+
+        return email
+        
+
+    # def clean_email(self):
+    #     email = self.cleaned_data['email']
+    #     email = Newsletter.objects.filter(email=email)
+    #     if email:
+    #         raise forms.ValidationError("Already subscribed")
+    #     return email
+
+
+
 
 

@@ -1,7 +1,7 @@
 from news.models import News
+
 import random
 from constance import config
-from django.shortcuts import render
 
 
 def extras(request):
@@ -14,3 +14,5 @@ def extras(request):
 
 def const(request):
     return {'config':config}
+
+

@@ -8,13 +8,21 @@
                         </div>
                         <div class="bg-white text-center border border-top-0 p-3">
                             <p>Subscribe to our newsletter and stay Updated.</p>
+                            {% for msg in messages %}
+                                        {{ msg }}
+                                     {% endfor %}
+
+
                             <div class="input-group mb-2" style="width: 100%;">
-                                <form method="get" action="/newsletter" class="d-flex mx-3 align-content-center">
+                                <form method="post" action="{% url 'newsletter' %}" class="d-flex mx-3 align-content-center">
+                                  {% csrf_token %}
                                 <input  type="email" class="form-control form-control-lg" placeholder="Your Email" name="email">
                                 <div class="input-group-append">
                                     <button class="btn btn-primary font-weight-bold px-3">Sign Up</button>
                                 </div>
+                                
                                 </form>
+                                
                             </div>
                             <small>* I agree to join biznews newslatter.</small>
                         </div>

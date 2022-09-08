@@ -1,12 +1,10 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-
+from django.http import JsonResponse
 from news.models import News, User, Newsletter,Comment, SubComment
-from .forms import ContactForm, CommentForm, SubCommentForm, LoginForm
+from .forms import ContactForm, CommentForm, SubCommentForm, LoginForm, NewsletterForm
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
 
 #for class base view
 
@@ -299,23 +297,52 @@ def newsletter(request):
         return redirect('index')
 """
 
-class NewsLetterView(FormView):
+
+class NewsLetterFormView(CreateView):
     template_name = "news/newsletter.html"
+    form_class = NewsletterForm
 
-    def get(self, request, *args, **kwargs):
-        if request.method == "GET":
-            email = request.GET['email']
 
-            news_letter = Newsletter(email=email)
-            news_letter.save()
-            send_mail(
-                'Welcome to biznews NewsLetter',
-                f'Welcome, {email}.Thankyou for subscribe our NewsLetter',
-                'jatinyadav0000@gmail.com',
-                [f'{email}'],
-                fail_silently=False,
-            )
-            return redirect('index')
+    def post(self, request, *args, **kwargs):
+        form = NewsletterForm(request.POST)
+        if form.is_valid(request):
+            form.save()
+        return redirect("index")
+
+
+            
+    
+    # def form_valid(self, form):
+    #     email = Newsletter.objects.filter(email = form.data['email']).exists()
+
+    #     if email:
+    #         return JsonResponse({'message': "Email already exists. "}, status=403)
+    #     else:
+    #         self.object = form.save()
+    #         return JsonResponse({'message': "Email save. "}, status=200)
+
+
+    # def post(self, request, *args, **kwargs):
+    #     if request.method == 'POST':
+    #         form = NewsletterForm(request.POST)
+    #         if form.is_valid():
+    #             email = form.cleaned_data['email']
+    #             send_mail(
+    #                 'Welcome to biznews NewsLetter',
+    #                 f'Welcome, {email}.Thankyou for subscribe our NewsLetter',
+    #                 'jatinyadav0000@gmail.com',
+    #                 [f'{email}'],
+    #                 fail_silently=False,
+    #             )
+    #             news_letter = Newsletter(email=email)
+    #             news_letter.save()
+
+    #             return redirect('index')
+
+    #         context = {'form': form}
+    #         print(form.errors)
+    #         return render(request, "news/newsletter.html", context)
+
 
 """
 def handlesubcomment(request):
