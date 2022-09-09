@@ -1,8 +1,8 @@
+from importlib.resources import contents
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.http import JsonResponse
 from news.models import News, User, Newsletter,Comment, SubComment
-from .forms import ContactForm, CommentForm, SubCommentForm, LoginForm, NewsletterForm
+from .forms import ContactForm, CommentForm, RegisterForm, SubCommentForm, LoginForm, NewsletterForm
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 
@@ -204,35 +204,54 @@ def handleregister(request):
 
 class HandleRegisterView(CreateView):
     template_name = "news/register.html"
+    form_class = RegisterForm
 
     def post(self, request, *args, **kwargs):
-        if request.method == "POST":
-            email = request.POST['email']
-            fname = request.POST['fname']
-            lname = request.POST['lname']
-            pass1 = request.POST['pass']
-            pass2 = request.POST['pass2']
-            user = User.objects.filter(email=email)
-            if user:
-                message = "User is already exist"
-                context = {"message": message}
-                return render(request, "news/register.html", context)
-            else:
-                if pass1 == pass2:
-                    data = {
-                        "email": email,
-                        "first_name": fname,
-                        "last_name": lname,
-                    }
-                    user_obj = User.objects.create(**data)
-                    user_obj.set_password(pass1)
-                    user_obj.save()
-                    return redirect('login')
-                message = "Password and Re-enter password not matching.."
-                context = {"message": message}
-                return render(request, "news/register.html", context)
+        # form = RegisterForm(request.POST)
+        # if form.is_valid():
+        #     email = request.POST['email']
+        #     fname = request.POST['fname']
+        #     lname = request.POST['lname']
+        #     pass1 = request.POST['pass']
+        #      pass2 = request.POST['pass2']
+        #     data = {
+        #                 "email": email,
+        #                 "first_name": fname,
+        #                 "last_name": lname,
+        #             }
+        #     user_obj = User.objects.create(**data)
+        #     user_obj.set_password(pass1)
+        #     user_obj.save()
+        #     return redirect('login')
+        # context = {"form": form}
+        # return render(request, 'news/register.html', context)
 
-        return render(request, "news/register.html")
+
+        email = request.POST['email']
+        fname = request.POST['fname']
+        lname = request.POST['lname']
+        pass1 = request.POST['pass1']
+        pass2 = request.POST['pass2']
+        user = User.objects.filter(email=email)
+        if user:
+            message = "User is already exist"
+            context = {"message": message}
+            return render(request, "news/register.html", context)
+        else:
+            if pass1 == pass2:
+                data = {
+                    "email": email,
+                    "first_name": fname,
+                    "last_name": lname,
+                }
+                user_obj = User.objects.create(**data)
+                user_obj.set_password(pass1)
+                user_obj.save()
+                return redirect('login')
+            message = "Password and Re-enter password not matching.."
+            context = {"message": message}
+            return render(request, "news/register.html", context)
+
 
 
 
@@ -309,39 +328,6 @@ class NewsLetterFormView(CreateView):
             form.save()
         return redirect("index")
 
-
-            
-    
-    # def form_valid(self, form):
-    #     email = Newsletter.objects.filter(email = form.data['email']).exists()
-
-    #     if email:
-    #         return JsonResponse({'message': "Email already exists. "}, status=403)
-    #     else:
-    #         self.object = form.save()
-    #         return JsonResponse({'message': "Email save. "}, status=200)
-
-
-    # def post(self, request, *args, **kwargs):
-    #     if request.method == 'POST':
-    #         form = NewsletterForm(request.POST)
-    #         if form.is_valid():
-    #             email = form.cleaned_data['email']
-    #             send_mail(
-    #                 'Welcome to biznews NewsLetter',
-    #                 f'Welcome, {email}.Thankyou for subscribe our NewsLetter',
-    #                 'jatinyadav0000@gmail.com',
-    #                 [f'{email}'],
-    #                 fail_silently=False,
-    #             )
-    #             news_letter = Newsletter(email=email)
-    #             news_letter.save()
-
-    #             return redirect('index')
-
-    #         context = {'form': form}
-    #         print(form.errors)
-    #         return render(request, "news/newsletter.html", context)
 
 
 """

@@ -1,9 +1,10 @@
-from dataclasses import fields
-from email import message
-from urllib import request
+import email
 from django import forms
 from django.core.mail import send_mail
 from django.contrib import messages
+from django.contrib.auth import authenticate, login
+from django.shortcuts import redirect
+
 from news.models import *
 
 
@@ -41,7 +42,56 @@ class SubCommentForm(forms.ModelForm):
 class RegisterForm(forms.ModelForm):
     class Meta:
         model= User
-        fields =('first_name', 'last_name', 'email', 'password')
+        fields =('email', 'first_name', 'last_name', 'password')
+    
+    
+
+    # def clean(self):
+    #     super(RegisterForm, self).clean()
+
+    #     email = self.cleaned_data['email']
+    #     # pass1 = self.cleaned_data['pass1']
+    #     # pass2 = self.cleaned_data['pass2']
+
+    #     if User.objects.filter(email=email).exists():
+    #         raise forms.ValidationError( "this email is already registerd....")
+        
+    #     if pass1 != pass2:
+    #         raise forms.ValidationError("password and confirm password not same")
+
+    #     return self.cleaned_data
+
+    # def is_valid(self, request):
+    #     email = self.data['email']
+    #     fname = self.data['fname']
+    #     lname = self.data['lname']
+    #     pass1 = self.data['pass']
+    #     pass2 = self.data['pass2']
+
+    #     if User.objects.filter(email=email).exists():
+    #         return messages.error(request, "user is already register")
+    #     if pass1 != pass2:
+    #         return messages.error(request, "password and confirm password not match..")
+    #     data = {
+    #         "email": email,
+    #         "first_name": fname,
+    #         "last_name": lname,
+    #     }
+    #     return data
+
+    
+    # def save(self, commit=True):
+    #     user_obj = super(RegisterForm, self).save(commit=False)
+    #     #user_obj.email = self.cleaned_data['email']
+    #     user_obj = User.objects.create(**self.data)
+    #     user_obj.set_password(self.cleaned_data['pass'])
+    #     if commit:
+    #         user_obj.save()
+    #     return user_obj
+        
+     
+        
+
 
 
 class LoginForm(forms.ModelForm):
@@ -49,6 +99,8 @@ class LoginForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('email', 'password')
+
+   
 
 
 class NewsletterForm(forms.ModelForm):
@@ -75,12 +127,7 @@ class NewsletterForm(forms.ModelForm):
         return email
         
 
-    # def clean_email(self):
-    #     email = self.cleaned_data['email']
-    #     email = Newsletter.objects.filter(email=email)
-    #     if email:
-    #         raise forms.ValidationError("Already subscribed")
-    #     return email
+    
 
 
 
