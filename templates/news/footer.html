@@ -4,28 +4,30 @@
         <div class="row py-4">
             <div class="col-lg-3 col-md-6 mb-5">
                 <h5 class="mb-4 text-white text-uppercase font-weight-bold">Get In Touch</h5>
-                <p class="font-weight-medium"><i class="fa fa-map-marker-alt mr-2"></i>123 Street, New York, USA</p>
-                <p class="font-weight-medium"><i class="fa fa-phone-alt mr-2"></i>+012 345 67890</p>
-                <p class="font-weight-medium"><i class="fa fa-envelope mr-2"></i>info@example.com</p>
+                <p class="font-weight-medium"><i class="fa fa-map-marker-alt mr-2"></i>{{ config.ADDRESS }}</p>
+                <p class="font-weight-medium"><i class="fa fa-phone-alt mr-2"></i>{{ config.PHONE }}</p>
+                <p class="font-weight-medium"><i class="fa fa-envelope mr-2"></i>{{ config.EMAIL }}</p>
                 <h6 class="mt-4 mb-3 text-white text-uppercase font-weight-bold">Follow Us</h6>
                 <div class="d-flex justify-content-start">
-                    <a class="btn btn-lg btn-secondary btn-lg-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
-                    <a class="btn btn-lg btn-secondary btn-lg-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn btn-lg btn-secondary btn-lg-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a class="btn btn-lg btn-secondary btn-lg-square mr-2" href="#"><i class="fab fa-instagram"></i></a>
+                    <a class="btn btn-lg btn-secondary btn-lg-square mr-2" href="{{config.TWITTER}}"><i class="fab fa-twitter"></i></a>
+                    <a class="btn btn-lg btn-secondary btn-lg-square mr-2" href="{{ config.FACEBOOK}}"><i class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-lg btn-secondary btn-lg-square mr-2" href="{{ config.LINKEDIN}}"><i class="fab fa-linkedin-in"></i></a>
+                    <a class="btn btn-lg btn-secondary btn-lg-square mr-2" href="{{ config.INSTAGRAM}}"><i class="fab fa-instagram"></i></a>
                     <a class="btn btn-lg btn-secondary btn-lg-square" href="#"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 mb-5">
                 <h5 class="mb-4 text-white text-uppercase font-weight-bold">Popular News</h5>
+                {% for i in trending %}
                 <div class="mb-3">
                     <div class="mb-2">
-                        <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="">Business</a>
-                        <a class="text-body" href=""><small>Jan 01, 2045</small></a>
+                        <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="">{{i.category}}</a>
+                        <a class="text-body" href=""><small>{{i.created}}</small></a>
                     </div>
-                    <a class="small text-body text-uppercase font-weight-medium" href="">Lorem ipsum dolor sit amet elit. Proin vitae porta diam...</a>
+                    <a class="small text-body text-uppercase font-weight-medium" href="/single_news/{{ i.slug }}">{{i.heading}}</a>
                 </div>
-                <div class="mb-3">
+                {% endfor %}
+                {% comment %} <div class="mb-3">
                     <div class="mb-2">
                         <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="">Business</a>
                         <a class="text-body" href=""><small>Jan 01, 2045</small></a>
@@ -38,16 +40,16 @@
                         <a class="text-body" href=""><small>Jan 01, 2045</small></a>
                     </div>
                     <a class="small text-body text-uppercase font-weight-medium" href="">Lorem ipsum dolor sit amet elit. Proin vitae porta diam...</a>
-                </div>
+                </div> {% endcomment %}
             </div>
             <div class="col-lg-3 col-md-6 mb-5">
                 <h5 class="mb-4 text-white text-uppercase font-weight-bold">Categories</h5>
                 <div class="m-n1">
-                    <a href="" class="btn btn-sm btn-secondary m-1">Politics</a>
-                    <a href="" class="btn btn-sm btn-secondary m-1">Business</a>
-                    <a href="" class="btn btn-sm btn-secondary m-1">Corporate</a>
-                    <a href="" class="btn btn-sm btn-secondary m-1">Business</a>
-                    <a href="" class="btn btn-sm btn-secondary m-1">Health</a>
+                    <a href="{% url 'category' "Politics" %}" class="btn btn-sm btn-secondary m-1">Politics</a>
+                    <a href="{% url 'category' "business" %}" class="btn btn-sm btn-secondary m-1">Business</a>
+                    <a href="{% url 'category' "sports" %}" class="btn btn-sm btn-secondary m-1">Sports</a>
+                    <a href="{% url 'category' "Science" %}" class="btn btn-sm btn-secondary m-1">Science</a>
+                    {% comment %} <a href="" class="btn btn-sm btn-secondary m-1">Health</a>
                     <a href="" class="btn btn-sm btn-secondary m-1">Education</a>
                     <a href="" class="btn btn-sm btn-secondary m-1">Science</a>
                     <a href="" class="btn btn-sm btn-secondary m-1">Business</a>
@@ -63,7 +65,7 @@
                     <a href="" class="btn btn-sm btn-secondary m-1">Education</a>
                     <a href="" class="btn btn-sm btn-secondary m-1">Science</a>
                     <a href="" class="btn btn-sm btn-secondary m-1">Business</a>
-                    <a href="" class="btn btn-sm btn-secondary m-1">Foods</a>
+                    <a href="" class="btn btn-sm btn-secondary m-1">Foods</a> {% endcomment %}
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 mb-5">

@@ -5,6 +5,7 @@ from news.models import News, User, Newsletter,Comment, SubComment
 from .forms import ContactForm, CommentForm, RegisterForm, SubCommentForm, LoginForm, NewsletterForm
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
+from constance import config
 
 #for class base view
 
@@ -22,6 +23,8 @@ def index(request):
     return render(request, 'news/index.html', context)
 """
 
+def base(request):
+    return render(request, 'news/footer.html', {'config':config})
 
 class IndexView(ListView):
     model = News
