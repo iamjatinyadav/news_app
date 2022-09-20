@@ -19,6 +19,7 @@
   {% for error in form.email.errors %}
     <p>{{ error }}<p>
   {% endfor %}
+  {% comment %} {{ form.as_p }} {% endcomment %}
   <label for="email">Email:</label><br>
   <input type="text" id="email" name="email" placeholder="John@gmail.com" required><br>
   <label for="fname">First name:</label><br>

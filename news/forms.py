@@ -2,8 +2,8 @@ import email
 from django import forms
 from django.core.mail import send_mail
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
-from django.shortcuts import redirect
+from django.contrib.auth import authenticate, login, get_user_model
+
 
 from news.models import *
 
@@ -90,16 +90,29 @@ class RegisterForm(forms.ModelForm):
     #     return user_obj
         
      
-        
 
-
-
+# User = get_user_model()
 class LoginForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email', 'password')
+        fields = '__all__'
+    
+    # def __init__(self, *args, **kwargs):
+    #     super(LoginForm, self).__init__(*args, **kwargs)
 
+    def clean(self, *args, **kwargs):
+        email = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('pass')
+        user = authenticate(email=email, password=password)
+        if not user:
+            raise forms.ValidationError("this email does not exist...")
+        if not user.check_password(password):
+            raise forms.ValidationError("Invalid Password...")
+        if not user.is_active:
+            raise forms.ValidationError("this user no longer active..")
+
+        return super(LoginForm, self).clean(*args, **kwargs)
    
 
 

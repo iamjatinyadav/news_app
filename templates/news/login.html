@@ -6,14 +6,23 @@
 
 <form action="" method="post">
     {% csrf_token %}
+    {% for error in form.email.errors %}
+    <p>{{ error }}<p>
+    {% endfor %}
+    {% comment %} {{ form.non_field_errors }} {% endcomment %}
+    {{ form.as_p }}
+
+    {% comment %} {% for msg in messages %}
+      {{ msg }}
+    {% endfor %}
   <label for="email">Email:</label><br>
   <input type="text" id="email" name="email" placeholder="John@gmail.com" required><br>
   <label for="pass">Passsword:</label><br>
-  <input type="password" id="pass" name="pass" required><br><br>
+  <input type="password" id="pass" name="pass" required><br><br> {% endcomment %}
   <p>Want to Register. <a href="{% url 'register' %}">Register Here </a></p><br>
   <input type="submit" value="Submit">
 </form>
 
 
 </body>
-</html
+</html>

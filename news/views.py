@@ -1,15 +1,16 @@
-from importlib.resources import contents
+from multiprocessing import context
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from news.models import News, User, Newsletter,Comment, SubComment
 from .forms import ContactForm, CommentForm, RegisterForm, SubCommentForm, LoginForm, NewsletterForm
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
-from constance import config
+from django.contrib.auth.forms import AuthenticationForm
 
 #for class base view
 
-from django.views.generic import ListView, DetailView, CreateView, FormView
+from django.views.generic import ListView, DetailView, CreateView, FormView, View
 from django.contrib.auth.views import LoginView, LogoutView
 
 
@@ -23,8 +24,6 @@ def index(request):
     return render(request, 'news/index.html', context)
 """
 
-def base(request):
-    return render(request, 'news/footer.html', {'config':config})
 
 class IndexView(ListView):
     model = News
@@ -160,18 +159,50 @@ def handlelogin(request):
 
 class HandleLoginView(LoginView):
     template_name = "news/login.html"
+    #add LOGIN_REDIRECT_URL in base.py
+    # authentication_form = LoginForm
+    #success_url = "index"
 
-    def post(self, request, *args, **kwargs):
+    
+    # def post(self, request, *args, **kwargs):
+    #     email = request.POST["email"]
+    #     password = request.POST["pass"]
+    #     user = authenticate(request, email=email, password=password)
 
-        email = request.POST["email"]
-        password = request.POST["pass"]
-        user = authenticate(request, email=email, password=password)
+    #     if user is not None:
+    #         login(request, user)
+    #         return redirect('index')
+    #     else:
+    #         return redirect('login')
 
-        if user is not None:
-            login(request, user)
-            return redirect('index')
-        else:
-            return redirect('login')
+            # else:
+            #     return redirect('login')
+
+            # if not user:
+            #     messages =  "this email does not exist..."
+            #     print(messages)
+            #     context = { messages : messages} 
+            #     return render(request, 'news/login.html', context)
+
+            # if not user.check_password(password):
+            #     return messages.error(request, "Invalid Password...")
+            # if not user.is_active:
+            #     return messages.error(request, "this user no longer active..")
+
+        
+
+        # form = LoginForm(request.POST or None)
+        # if form.is_valid():
+        #     email = form.cleaned_data.get("email")
+        #     password = form.cleaned_data.get("pass")
+        #     user = authenticate(request, email=email, password=password)
+        #     login(request, user)
+        #     return redirect("index")
+
+
+        # return render(request, 'news/login.html', {'form': form})
+
+        
 
 """
 def handleregister(request):
@@ -249,6 +280,7 @@ class HandleRegisterView(CreateView):
                 }
                 user_obj = User.objects.create(**data)
                 user_obj.set_password(pass1)
+                user_obj.is_active = True
                 user_obj.save()
                 return redirect('login')
             message = "Password and Re-enter password not matching.."

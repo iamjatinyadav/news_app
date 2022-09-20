@@ -22,6 +22,7 @@ urlpatterns = [
     path('comment', views.CommentPostView.as_view(), name="comments"),
     path('contact', views.ContactView.as_view(), name="contact"),
     path('Login', views.HandleLoginView.as_view(), name="login"),
+    # path('Login', views.LoginView, name="login"),
     path('Register', views.HandleRegisterView.as_view(), name="register"),
     path('Logout', views.HandleLogout.as_view(), name="logout"),
     path('search', views.SearchView.as_view(), name="search"),
