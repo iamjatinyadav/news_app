@@ -32,7 +32,7 @@ PROJECT_DOMAIN = '%s.com' % PROJECT_NAME.lower()
 path.append(str(PROJECT_ROOT))
 # END PATH CONFIGURATION
 
-DEBUG = STAGING = False
+DEBUG = STAGING = True
 # END DEBUG CONFIGURATION
 
 ADMINS = (
@@ -172,6 +172,7 @@ INSTALLED_APPS = (
     'constance.backends.database',
     'core',
     'news',
+    'django.contrib.humanize',
 
     'sass_processor',
 

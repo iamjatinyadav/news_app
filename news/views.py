@@ -12,6 +12,7 @@ from django.contrib.auth.forms import AuthenticationForm
 
 from django.views.generic import ListView, DetailView, CreateView, FormView, View
 from django.contrib.auth.views import LoginView, LogoutView
+from .choices import NEWS_CATEGORY_CHOICES
 
 
 
@@ -28,9 +29,8 @@ def index(request):
 class IndexView(ListView):
     model = News
     template_name = 'news/index.html'
-    context_object_name = 'latest_news'
 
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(self, *args, **kwargs):
         et = super(IndexView, self).get_context_data(**kwargs)
         et['latest_news'] = News.objects.filter().order_by('-id')[:2]
         et['news'] = News.objects.order_by('id')
@@ -48,11 +48,10 @@ def category(request, category):
 class CategoryView(ListView):
     template_name = "news/category.html"
 
-    def get(self, request, queryset=None, *args, **kwargs):
-        if kwargs.get('category') == "business":
-            news = News.objects.filter(category='Business')
-        else:
-            news = News.objects.filter(category=kwargs.get('category'))
+    def get(self, request, *args, **kwargs):
+        news = News.objects.filter(category=kwargs.get('category'))
+        # if kwargs.get('category') == NEWS_CATEGORY_CHOICES.Business:
+        #     news = News.objects.filter(category=NEWS_CATEGORY_CHOICES.Business)
         return render(request, self.template_name, {'news': news})
 
 

@@ -1,6 +1,6 @@
 {% extends 'news/base.html' %}
 {% load static %}
-
+{% load humanize %}
 {% block contant %}
 <!--<!DOCTYPE html>-->
 <!--<html lang="en">-->
@@ -178,7 +178,7 @@
                                         href="">Business</a>
                                     <a class="text-white" href=""><small>Jan 01, 2045</small></a>
                                 </div>
-                                <a class="h6 m-0 text-white text-uppercase font-weight-semi-bold" href="{% url 'category' "business" %}"">Business All News</a>
+                                <a class="h6 m-0 text-white text-uppercase font-weight-semi-bold" href="{% url 'category' "Business" %}">Business All News</a>
                             </div>
                         </div>
                     </div>
@@ -336,7 +336,7 @@
                                     <div class="mb-2">
                                         <a class="badge badge-primary text-uppercase font-weight-semi-bold p-2 mr-2"
                                             href="">{{ latest.category }}</a>
-                                        <a class="text-body" href=""><small>{{ latest.created }}</small></a>
+                                        <a class="text-body" href=""><small>{{ latest.created | naturaltime }}</small></a>
                                     </div>
                                     <a class="h4 d-block mb-3 text-secondary text-uppercase font-weight-bold" href="single_news/{{ latest.slug }}" >{{ latest.heading | truncatechars:35 }}</a>
                                     <p class="m-0">{{ latest.news | truncatechars:150 }}</p>
@@ -392,7 +392,7 @@
                                     <div class="mb-2">
                                         <a class="badge badge-primary text-uppercase font-weight-semi-bold p-2 mr-2"
                                             href="">{{ i.category}}</a>
-                                        <a class="text-body" href=""><small>{{i.created}}</small></a>
+                                        <a class="text-body" href=""><small>{{i.created | naturaltime }}</small></a>
                                     </div>
                                     <a class="h4 d-block mb-0 text-secondary text-uppercase font-weight-bold" href="single_news/{{ i.slug }}">{{ i.heading | truncatechars:35 }}</a>
                                 </div>
@@ -441,7 +441,7 @@
                                 <div class="w-100 h-100 px-3 d-flex flex-column justify-content-center border border-left-0">
                                     <div class="mb-2">
                                         <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="">{{ i.category }}</a>
-                                        <a class="text-body" href=""><small>{{ i.created}}</small></a>
+                                        <a class="text-body" href=""><small>{{ i.created | naturaltime }}</small></a>
                                     </div>
                                     <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="single_news/{{ i.slug }}">{{ i.heading | truncatechars:35 }}</a>
                                 </div>
@@ -465,7 +465,7 @@
                                 <div class="w-100 h-100 px-3 d-flex flex-column justify-content-center border border-left-0">
                                     <div class="mb-2">
                                         <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="">{{i.category}}</a>
-                                        <a class="text-body" href=""><small>{{i.created}}</small></a>
+                                        <a class="text-body" href=""><small>{{i.created | naturaltime }}</small></a>
                                     </div>
                                     <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="single_news/{{ i.slug }}">{{ i.heading | truncatechars:35 }}</a>
                                 </div>
